@@ -2,7 +2,7 @@ require 'pg'
 
 class Doctor
 
-  attr_reader :name
+  attr_reader :name, :id
 
   def initialize(name)
     @name = name
@@ -24,6 +24,10 @@ class Doctor
 
   def ==(another_doctor)
     self.name == another_doctor.name
+  end
+
+  def save_id(id, name)
+    DB.exec("UPDATE doctors SET specialty_id = #{id} WHERE name = '#{name}';")
   end
 
 end

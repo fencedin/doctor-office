@@ -31,14 +31,52 @@ def main_menu
 end
 
 def add_doctor
-  puts "Enter doctor full name:"
-  name = gets.chomp
-  puts "\nEnter doctor specialty:"
-  specialty = gets.chomp
-  new_doctor = Doctor.new(name, specialty)
-  new_doctor.save
-  main_menu
+  puts "Enter doctors full name:"
+  @name = gets.chomp
+  @new_doctor = Doctor.new(@name)
+  @new_doctor.save
+  list_specialty
+end
+
+def list_specialty
+  puts "\nHere is a list of current specialties.\n"
+  results = DB.exec("SELECT * FROM specialties;")
+    results.each do |result|
+      puts result["name"]
+    end
+  puts "\nEnter the name of the specialty for this doctor, or enter 'n' for new specialty.\n"
+  specialty = gets.chomp.upcase
+  case specialty
+  when 'n'
+    new_specialty
+  else
+    id_result = DB.exec("SELECT * FROM specialties;")
+      id_result.each do |result|
+        if specialty == result['name']
+          @id = result['id']
+        else
+        end
+      end
+    @new_doctor.save_id(@id, @name)
+    main_menu
+  end
+end
+
+
+
+ def new_specialty
+  new_specialty = Specialty.new(specialty)
+  new_specialty.save
+
+  @new_doctor.save_id(@id, name)
+
+
+
+
 
 end
+
+
+
 system "clear"
 main_menu

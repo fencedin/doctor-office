@@ -26,4 +26,12 @@ describe Doctor do
     doctor2 = Doctor.new('Dr. Same')
     doctor1.should eq doctor2
   end
+
+  # it 'saves the specialty id to the doctor' do
+  #   doctor = Doctor.new("Dr. Some name")
+  #   specialty = Specialty.new("General")
+  #   doctor.save
+  #   doctor.save_id(2, "Dr. Some name")
+  #   doctor.id.should eq 2
+  # end
 end
