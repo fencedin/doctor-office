@@ -28,4 +28,8 @@ class Patient
     self.name == another_patient.name && self.dob == another_patient.dob
   end
 
+  def save_id(id, name)
+    DB.exec("UPDATE patients SET doctor_id = #{id} WHERE name = '#{name}';")
+  end
+
 end
