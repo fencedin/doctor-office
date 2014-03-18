@@ -22,7 +22,10 @@ def main_menu
     system "clear"
     main_menu
   when 's'
-    list_specialty
+    search_specialty
+    gets.chomp
+    system "clear"
+    main_menu
   when 'l'
     list_patients
     gets.chomp
@@ -101,9 +104,9 @@ end
 
 def list_doctors
   puts "Here is a directory of doctors with their specialty.\n\n"
-  results = DB.exec("SELECT * FROM doctors;")
+  results = DB.exec("SELECT * FROM doctors ORDER BY name;")
   results.each do |result|
-    specs = DB.exec("SELECT * FROM specialties;")
+    specs = DB.exec("SELECT * FROM specialties ORDER BY name;")
     specs.each do |spec|
       if result["specialty_id"] == spec["id"]
         puts "\t" + result["name"] + ": " + spec["name"]
@@ -151,9 +154,9 @@ end
 
 def list_patients
   puts "Here is a directory of patients with their doctors.\n\n"
-  results = DB.exec("SELECT * FROM patients;")
+  results = DB.exec("SELECT * FROM patients ORDER BY name;")
   results.each do |result|
-    specs = DB.exec("SELECT * FROM doctors;")
+    specs = DB.exec("SELECT * FROM doctors ORDER BY name;")
     specs.each do |spec|
       if result["doctor_id"] == spec["id"]
         puts "\t" + result["name"] + " (" + result["dob"] + ") : " + spec["name"]
@@ -162,6 +165,18 @@ def list_patients
   end
 end
 
+def search_specialty
+  puts "Here is a directory of all doctors by specialty.\n\n"
+  specs = DB.exec("SELECT * FROM specialties ORDER BY name;")
+  specs.each do |spec|
+    results = DB.exec("SELECT * FROM doctors ORDER BY name;")
+    results.each do |result|
+      if result["specialty_id"] == spec["id"]
+        puts "\t" + spec["name"] + " :" + result["name"]
+      end
+    end
+  end
+end
 
 system "clear"
 main_menu
