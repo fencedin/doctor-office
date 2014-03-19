@@ -27,3 +27,6 @@ class Specialty
   end
 
 end
+
+#look at refactoring self.all to include RETURNING id with
+#@id = results.first['id'].to_i

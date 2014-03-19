@@ -3,6 +3,10 @@ require './lib/doctor'
 require './lib/patient'
 require './lib/specialty'
 
+#look at refactoring the looping within methods for IDs - check each class
+#for code about returning ID when saving new instance.
+#otherwise, this works.
+
 DB = PG.connect(:dbname => 'doctors_office')
 
 def main_menu
@@ -51,9 +55,9 @@ end
 def list_specialty
   puts "\nHere is a list of current specialties.\n"
   results = DB.exec("SELECT * FROM specialties;")
-    results.each do |result|
-      puts result["name"]
-    end
+  results.each do |result|
+    puts result["name"]
+  end
   puts "\nEnter the name of the specialty for this doctor, or enter 'n' for new specialty.\n"
   specialty = gets.chomp.upcase
   id_result = DB.exec("SELECT * FROM specialties;")
@@ -64,23 +68,56 @@ def list_specialty
   end
   if @pass == true
     case specialty
-    when 'N'
+    when 'N', 'n'
       new_specialty
     else
       id_result = DB.exec("SELECT * FROM specialties;")
       id_result.each do |result|
         if specialty == result['name']
           @specialty_id = result['id']
-        else
         end
       end
       @new_doctor.save_id(@specialty_id, @doctor_name)
       system "clear"
-      main_menu
+      get_accepted_insurance
     end
   else
     puts "That is not a valid entry.\n\n"
     list_specialty
+  end
+end
+
+def list_insurance
+  puts "Here is a list of currently accepted insurance plans.\n\n"
+  results = DB.exec("SELECT * FROM insurance ORDER BY name;")
+  results.each do |result|
+    puts "\t" + result["name"]
+  end
+end
+
+def get_accepted_insurance
+  list_insurance
+  puts "Which insurance does this doctor accept?"
+  accepted_insurance = gets.chomp.upcase
+  id_result = DB.exec("SELECT * FROM insurance;")
+  id_result.each do |result|
+    if accepted_insurance == result['name']
+      @pass = true
+    end
+  end
+  if @pass == true
+    id_result = DB.exec("SELECT * FROM insurance;")
+    id_result.each do |result|
+      if accepted_insurance == result['name']
+        @accepted_insurance_id = result['id']
+      end
+    end
+    @new_doctor.save_insurance(@accepted_insurance_id, @doctor_name)
+    system "clear"
+    main_menu
+  else
+    system "clear"
+    get_accepted_insurance
   end
 end
 
@@ -103,13 +140,14 @@ def new_specialty
 end
 
 def list_doctors
-  puts "Here is a directory of doctors with their specialty.\n\n"
+  puts "\nHere is a directory of doctors with their specialty.\n"
+  puts "Insurance code: 1 = HEALTH CROSS, 2 = PACIFIC SPAN, 3 = RED SHIELD\n\n"
   results = DB.exec("SELECT * FROM doctors ORDER BY name;")
   results.each do |result|
     specs = DB.exec("SELECT * FROM specialties ORDER BY name;")
     specs.each do |spec|
       if result["specialty_id"] == spec["id"]
-        puts "\t" + result["name"] + ": " + spec["name"]
+        puts "\t" + result["name"] + ", specialty: " + spec["name"] + " -- Ins Code: " + result["accepted_insurance_id"]
       end
     end
   end

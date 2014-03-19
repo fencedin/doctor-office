@@ -30,4 +30,12 @@ class Doctor
     DB.exec("UPDATE doctors SET specialty_id = #{id} WHERE name = '#{name}';")
   end
 
+  def save_insurance(id, name)
+    DB.exec("UPDATE doctors SET accepted_insurance_id = #{id} WHERE name = '#{name}';")
+  end
+
 end
+
+
+#look at refactoring self.all to include RETURNING id with
+#@id = results.first['id'].to_i
